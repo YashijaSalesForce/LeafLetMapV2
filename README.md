@@ -1,7 +1,7 @@
 # 야쉬자맵V2(Event,Opportunity APEX 구현완료 & 현재위치 구현완료)
 <img width="1232" alt="image" src="https://github.com/user-attachments/assets/22669428-9f7a-44b7-8f53-021dd121483c" />
 
-
+# 모바일 버전
 
 
 # 필요한 세팅
@@ -32,3 +32,4 @@ Cache Control: Public
 - Static Resource Name은 leafletCSS, leafletJS로 입력
 - 파일 확장자 빠뜨리지 않기
 - CSP 설정(Trusted URLs) 빠뜨리지 않기
+
