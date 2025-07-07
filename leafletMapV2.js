@@ -9,12 +9,13 @@ import refreshMapData from '@salesforce/apex/MapDataController.refreshMapData';
 export default class leafletMapV2 extends LightningElement {
     @track isLoading = true;
     @track errorMessage = '';
-    @track activeFilters = new Set(['headquarters', 'event', 'account', 'opportunity', 'campaign']);
+    @track activeFilters = new Set(['event', 'account', 'opportunity', 'campaign']);
     @track isMapInitialized = false;
     @track scheduleData = [];
     
     map;
     markerLayers = {};
+    headquartersLayer; // 본사 레이어는 별도 관리
     wiredMapDataResult;
     mapData;
     
@@ -124,6 +125,7 @@ export default class leafletMapV2 extends LightningElement {
                 id: evt.id,
                 assignedTo: evt.assignedTo,
                 customerName: evt.customerName,
+                opportunityName: evt.opportunityName || evt.subject, // 영업기회명 추가
                 date: evt.date,
                 time: evt.time,
                 location: evt.location,
@@ -190,7 +192,11 @@ export default class leafletMapV2 extends LightningElement {
 
     // 마커 레이어 그룹 초기화
     initializeMarkerLayers() {
-        const markerTypes = ['headquarters', 'event', 'account', 'opportunity', 'campaign'];
+        // 본사 레이어는 별도로 생성하고 항상 표시
+        this.headquartersLayer = L.layerGroup().addTo(this.map);
+        
+        // 나머지 마커 타입들
+        const markerTypes = ['event', 'account', 'opportunity', 'campaign'];
         
         markerTypes.forEach(type => {
             this.markerLayers[type] = L.layerGroup().addTo(this.map);
@@ -200,17 +206,20 @@ export default class leafletMapV2 extends LightningElement {
     // 모든 마커 업데이트
     updateMarkers() {
         // 기존 마커 제거
+        if (this.headquartersLayer) {
+            this.headquartersLayer.clearLayers();
+        }
         Object.values(this.markerLayers).forEach(layer => {
             layer.clearLayers();
         });
 
         if (!this.mapData) return;
 
-        // 본사 마커
+        // 본사 마커 (항상 표시)
         if (this.mapData.headquarters) {
             this.mapData.headquarters.forEach(item => {
                 const marker = this.createHeadquartersMarker(item);
-                this.markerLayers.headquarters.addLayer(marker);
+                this.headquartersLayer.addLayer(marker);
             });
         }
 
@@ -291,7 +300,7 @@ export default class leafletMapV2 extends LightningElement {
                 break;
             case 'event':
                 details = [
-                    `영업기회: ${data.customerName}`,
+                    `고객: ${data.customerName}`,
                     `날짜: ${data.date}`,
                     `시간: ${data.time}`,
                     data.phone ? `연락처: ${data.phone}` : null,
@@ -545,9 +554,9 @@ export default class leafletMapV2 extends LightningElement {
         if (this.map) {
             this.map.setView([this.defaultCenter.lat, this.defaultCenter.lng], 13);
             
-            // 본사 마커가 활성화되어 있으면 팝업 열기
-            if (this.activeFilters.has('headquarters') && this.markerLayers.headquarters) {
-                this.markerLayers.headquarters.eachLayer(layer => {
+            // 본사 마커 팝업 열기
+            if (this.headquartersLayer) {
+                this.headquartersLayer.eachLayer(layer => {
                     if (layer.openPopup) {
                         setTimeout(() => layer.openPopup(), 500);
                     }
@@ -674,11 +683,6 @@ export default class leafletMapV2 extends LightningElement {
     }
 
     // 버튼 클래스 getter들
-    get headquartersButtonClass() {
-        const baseClass = 'slds-button slds-button_neutral';
-        return this.activeFilters.has('headquarters') ? `${baseClass} active` : baseClass;
-    }
-
     get eventButtonClass() {
         const baseClass = 'slds-button slds-button_neutral';
         return this.activeFilters.has('event') ? `${baseClass} active` : baseClass;
