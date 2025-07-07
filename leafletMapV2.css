@@ -2,7 +2,7 @@
 .marker-filter-buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 4px;
     margin-top: 8px;
   }
   
@@ -16,6 +16,35 @@
     min-height: 44px;
     font-size: 12px;
     font-weight: 500;
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
+  
+  /* 모바일에서 필터 버튼 크기 축소 */
+  @media (max-width: 768px) {
+    .marker-filter-buttons {
+        gap: 3px;
+        justify-content: space-between;
+    }
+    
+    .marker-filter-buttons button {
+        padding: 6px 10px;
+        font-size: 11px;
+        min-height: 36px;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+    
+    /* 필터 버튼 내부 아이콘과 텍스트 간격 조정 */
+    .filter-button-content {
+        gap: 4px;
+    }
+    
+    /* 미니 마커 크기 축소 */
+    .filter-marker {
+        width: 16px;
+        height: 16px;
+    }
   }
   
   .marker-filter-buttons button:hover {
@@ -97,7 +126,7 @@
     height: 100%;
   }
   
-  /* 지도 컨트롤 버튼들 */
+  /* 지도 컨트롤 버튼들 - 아이콘 스타일 추가 */
   .map-control-btn {
     position: absolute;
     width: 44px;
@@ -112,15 +141,24 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     transition: all 0.2s ease;
     z-index: 1000;
-    color: #54698D;
+  }
+  
+  /* lightning-icon 색상 설정 */
+  .map-control-btn lightning-icon {
+    --slds-c-icon-color-foreground: #54698D;
+    --slds-c-icon-color-foreground-default: #54698D;
   }
   
   .map-control-btn:hover {
     border-color: #1B96FF;
     background: #F3F9FF;
-    color: #1B96FF;
     transform: scale(1.05);
     box-shadow: 0 4px 12px rgba(27, 150, 255, 0.2);
+  }
+  
+  .map-control-btn:hover lightning-icon {
+    --slds-c-icon-color-foreground: #1B96FF;
+    --slds-c-icon-color-foreground-default: #1B96FF;
   }
   
   .map-control-btn:active {
@@ -137,6 +175,52 @@
   .location-btn {
     bottom: 12px;
     left: 12px;
+  }
+  
+  /* 모바일 일정 테이블 최적화 */
+  @media (max-width: 768px) {
+    /* 지도 크기는 유지 */
+    .map-container {
+        height: 400px;
+    }
+    
+    /* 모바일에서 숨길 컬럼들 */
+    .hide-on-mobile {
+        display: none !important;
+    }
+    
+    /* 테이블 폰트 크기 조정 */
+    .slds-table {
+        font-size: 12px;
+    }
+    
+    .slds-table th,
+    .slds-table td {
+        padding: 8px 4px;
+    }
+    
+    /* 버튼 크기 조정 */
+    .slds-button_icon-border-filled {
+        min-width: 32px;
+        width: 32px;
+        height: 32px;
+    }
+    
+    /* 컨트롤 버튼 크기 조정 */
+    .map-control-btn {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .home-btn {
+        top: 8px;
+        left: 8px;
+    }
+    
+    .location-btn {
+        bottom: 8px;
+        left: 8px;
+    }
   }
   
   /* 본사 마커 */
@@ -470,36 +554,19 @@
     transform: translateY(-1px);
   }
   
+  :host .popup-btn.record {
+    background: #747474;
+  }
+  
+  :host .popup-btn.record:hover {
+    background: #5C5C5C;
+    transform: translateY(-1px);
+  }
+  
   :host .popup-btn svg {
     width: 12px;
     height: 12px;
     fill: currentColor;
-  }
-  
-  /* 일정 테이블 반응형 */
-  @media (max-width: 768px) {
-    .slds-table {
-        font-size: 12px;
-    }
-    
-    .slds-table th,
-    .slds-table td {
-        padding: 8px 6px;
-    }
-    
-    .map-container {
-        height: 300px;
-    }
-    
-    .marker-filter-buttons {
-        justify-content: center;
-    }
-    
-    .marker-filter-buttons button {
-        min-width: 80px;
-        padding: 6px 8px;
-        font-size: 11px;
-    }
   }
   
   /* 테이블 호버 효과 */
